@@ -7,7 +7,6 @@ bot = telebot.TeleBot('5915797891:AAHiXjpHS8AVpWJ04bSy0DOznAnmq4qJMrE')
 
 PRODUCT_STRING = 'Id: %id% Name: %name% Price: %price%\nPhoto: %photo%'
 
-
 @bot.message_handler(commands=['products'])
 def products_command_handler(message: Message):
     res = requests.get('https://functions.yandexcloud.net/d4ecm6a80hvt9rrs7mmk')
@@ -96,8 +95,7 @@ def products_command_handler(message: Message):
         json_object = json.loads(str(res.text.replace("': b'", "': '").replace("'", '"')))
         email = json_object[0]['email']
         res = requests.get('https://functions.yandexcloud.net/d4e5gmpvpe3mmvdjplvr?productId='+str(productId)+'&stockId='+str(json_object_stock[0]['stock_id'])+'&userId='+str(message.chat.id)+'&coordinate={"x":'+x+',"y":'+y+'}')
-        print(res.text)
-        if res.status_code != 404:
+        if res.status_code == 404:
             bot.send_message(message.chat.id, 'Рядом с вами нет курьеров')
             return
         if res.status_code != 200:
