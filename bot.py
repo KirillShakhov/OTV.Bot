@@ -79,7 +79,7 @@ def products_command_handler(message: Message):
 
 @bot.message_handler(commands=['order'])
 def products_command_handler(message: Message):
-    res = requests.get('https://functions.yandexcloud.net/d4e07kfsoq37d9l5ikdk?id='+str(message.chat.id))
+    res = requests.get('https://functions.yandexcloud.net/d4ebuth672ccf2f4i5fp?id='+str(message.chat.id))
     json_object = json.loads(str(res.text.replace("': b'", "': '").replace("'", '"')))
     args = message.text.split()
     if len(json_object) > 0:
@@ -96,6 +96,10 @@ def products_command_handler(message: Message):
         json_object = json.loads(str(res.text.replace("': b'", "': '").replace("'", '"')))
         email = json_object[0]['email']
         res = requests.get('https://functions.yandexcloud.net/d4e5gmpvpe3mmvdjplvr?productId='+str(productId)+'&stockId='+str(json_object_stock[0]['stock_id'])+'&userId='+str(message.chat.id)+'&coordinate={"x":'+x+',"y":'+y+'}')
+        print(res.text)
+        if res.status_code != 404:
+            bot.send_message(message.chat.id, 'Рядом с вами нет курьеров')
+            return
         if res.status_code != 200:
             bot.send_message(message.chat.id, 'Ипользуйте: /order productId x y')
             return
@@ -104,7 +108,7 @@ def products_command_handler(message: Message):
         json_object = json.loads(str(res.text.replace("': b'", "': '").replace("'", '"')))
         bot.send_message(message.chat.id, 'Заказ создан. Вам его доставит '+json_object[0]['name']+' ('+json_object[0]['email']+')')
     else:
-        bot.send_message(message.chat.id, 'У вас нет доставок')
+        bot.send_message(message.chat.id, 'Нет на складе')
 
 
 bot.infinity_polling()
